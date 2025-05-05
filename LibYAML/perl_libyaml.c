@@ -743,6 +743,16 @@ set_dumper_options(perl_yaml_dumper_t *dumper)
         }
     }
 
+    dumper->use_header = (
+        ((gv = gv_fetchpv("YAML::XS::UseHeader", TRUE, SVt_PV)) &&
+        SvTRUE(GvSV(gv)))
+    );
+
+    dumper->convert_blessed = (
+        ((gv = gv_fetchpv("YAML::XS::ConvertBlessed", TRUE, SVt_PV)) &&
+        SvTRUE(GvSV(gv)))
+    );
+
     /* dumper->emitter.open_ended = 1;
      */
 }
@@ -798,6 +808,8 @@ Dump(SV *dummy, ...)
 
         hv_clear(dumper.anchors);
         hv_clear(dumper.shadows);
+
+        dumper.use_header = 1;
     }
 
     /* End emitting and destroy the emitter object */
@@ -881,7 +893,7 @@ dump_document(perl_yaml_dumper_t *dumper, SV *node)
     yaml_event_t event_document_start;
     yaml_event_t event_document_end;
     yaml_document_start_event_initialize(
-        &event_document_start, NULL, NULL, NULL, 0
+        &event_document_start, NULL, NULL, NULL, !dumper->use_header
     );
     yaml_emitter_emit(&dumper->emitter, &event_document_start);
     dump_node(dumper, node);
@@ -910,6 +922,35 @@ dump_node(perl_yaml_dumper_t *dumper, SV *node)
     if (SvROK(node)) {
         SV *rnode = SvRV(node);
         U32 ref_type = SvTYPE(rnode);
+
+        if (dumper->convert_blessed && SvOBJECT(rnode)) {
+            GV *method;
+            HV *stash = SvSTASH(rnode);
+            if ((method = gv_fetchmethod_autoload(stash, "yaml_dump", 0)) != NULL) {
+                dSP;
+
+                ENTER; SAVETMPS; PUSHMARK(SP);
+                XPUSHs(sv_bless(sv_2mortal(newRV_inc(rnode)), stash));
+
+                PUTBACK;
+                call_sv((SV *)GvCV(method), G_SCALAR);
+                SPAGAIN;
+
+                if (SvROK(TOPs) && SvRV(TOPs) == rnode) {
+                    croak("%s::yaml_dump method returned same object "
+                          "as was passed instead of a new one", HvNAME(stash));
+                }
+
+                rnode = POPs;
+                PUTBACK;
+
+                dump_node(dumper, rnode);
+
+                FREETMPS; LEAVE;
+                return;
+            }
+        }
+
         if (ref_type == SVt_PVHV)
             dump_hash(dumper, node, anchor, tag);
         else if (ref_type == SVt_PVAV)

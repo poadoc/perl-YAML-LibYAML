@@ -10,12 +10,14 @@ use base 'Exporter';
 %YAML::XS::EXPORT_TAGS = (
     all => [qw(Dump Load LoadFile DumpFile)],
 );
-our ($UseCode, $DumpCode, $LoadCode, $Boolean, $LoadBlessed, $Indent);
+our ($UseCode, $DumpCode, $LoadCode, $Boolean, $LoadBlessed, $Indent, $UseHeader, $ConvertBlessed);
 # $YAML::XS::UseCode = 0;
 # $YAML::XS::DumpCode = 0;
 # $YAML::XS::LoadCode = 0;
 
 $YAML::XS::QuoteNumericStrings = 1;
+$YAML::XS::UseHeader = 1;
+$YAML::XS::ConvertBlessed = 1;
 
 use YAML::XS::LibYAML qw(Load Dump);
 use Scalar::Util qw/ openhandle /;
