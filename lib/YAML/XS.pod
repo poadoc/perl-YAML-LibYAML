@@ -6,21 +6,21 @@ See http://github.com/ingydotnet/swim-pm#readme
 
 =encoding utf8
 
-=head1 Name
+=head1 NAME
 
 YAML::XS - Perl YAML Serialization using XS and libyaml
 
 =for html
 <a href="https://travis-ci.org/ingydotnet/yaml-libyaml-pm"><img src="https://travis-ci.org/ingydotnet/yaml-libyaml-pm.png" alt="yaml-libyaml-pm"></a>
 
-=head1 Synopsis
+=head1 SYNOPSIS
 
     use YAML::XS;
 
     my $yaml = Dump [ 1..4 ];
     my $array = Load $yaml;
 
-=head1 Description
+=head1 DESCRIPTION
 
 Kirill Simonov's C<libyaml> is arguably the best YAML implementation. The C
 library is written precisely to the YAML 1.1 specification. It was originally
@@ -33,7 +33,7 @@ This module exports the functions C<Dump>, C<Load>, C<DumpFile> and
 C<LoadFile>. These functions are intended to work exactly like C<YAML.pm>'s
 corresponding functions. Only C<Load> and C<Dump> are exported by default.
 
-=head1 Configuration
+=head1 CONFIGURATION
 
 =over
 
@@ -123,7 +123,7 @@ Sets the number of spaces for indentation for C<Dump>.
 
 =back
 
-=head1 Using YAML::XS with Unicode
+=head1 USING YAML::XS WITH UNICODE
 
 Handling unicode properly in Perl can be a pain. YAML::XS only deals with
 streams of utf8 octets. Just remember this:
@@ -134,14 +134,14 @@ streams of utf8 octets. Just remember this:
 There are many, many places where things can go wrong with unicode. If you are
 having problems, use Devel::Peek on all the possible data points.
 
-=head1 libyaml
+=head1 LIBYAML
 
 You can find out (since v.079) which libyaml version this module was
 built with:
 
       my $libyaml_version = YAML::XS::LibYAML::libyaml_version();
 
-=head1 See Also
+=head1 SEE ALSO
 
 =over
 
@@ -157,11 +157,11 @@ built with:
 
 =back
 
-=head1 Author
+=head1 AUTHOR
 
 Ingy döt Net <ingy@cpan.org>
 
-=head1 Copyright and License
+=head1 COPYRIGHT AND LICENSE
 
 Copyright 2007-2020. Ingy döt Net.
 
